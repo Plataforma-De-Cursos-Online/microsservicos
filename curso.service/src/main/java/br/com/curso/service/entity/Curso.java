@@ -1,5 +1,6 @@
 package br.com.curso.service.entity;
 
+import br.com.curso.service.tipos.TipoCurso;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,10 +29,10 @@ public class Curso {
 
     private Double preco;
 
-//    private Categoria categoria;
-
     private Boolean disponivel;
 
     private UUID idUsuario;
+
+    private TipoCurso tipoCurso;
 
 }
