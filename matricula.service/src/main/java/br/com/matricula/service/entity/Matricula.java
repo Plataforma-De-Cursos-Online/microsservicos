@@ -1,9 +1,7 @@
 package br.com.matricula.service.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import br.com.matricula.service.tipos.StatusMatricula;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +23,8 @@ public class Matricula {
 
     private LocalDate data;
 
-//  private Status status;
+    @Enumerated(EnumType.STRING)
+    private StatusMatricula status;
 
     private UUID idUsuario;
 

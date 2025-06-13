@@ -1,0 +1,54 @@
+package br.com.matricula.service.controller;
+
+import br.com.matricula.service.dto.AtualizarDto;
+import br.com.matricula.service.dto.CadastroDto;
+import br.com.matricula.service.entity.Matricula;
+import br.com.matricula.service.service.MatriculaService;
+import br.com.matricula.service.tipos.StatusMatricula;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/matricula")
+public class MatriculaController {
+
+    @Autowired
+    MatriculaService service;
+
+    @PostMapping
+    public ResponseEntity<Matricula> cadastrar(@RequestBody CadastroDto dados){
+        return ResponseEntity.status(201).body(service.cadastrar(dados));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Matricula>> listarTodos(){
+        return ResponseEntity.status(200).body(service.listarTodos());
+    }
+
+    @GetMapping("/cursos-por-usuario/{idUsuario}")
+    public ResponseEntity<List<Matricula>> listarCursosPorUsuario(@PathVariable UUID idUsuario){
+        return ResponseEntity.status(200).body(service.listarCursosPorUsuario(idUsuario));
+    }
+
+    @GetMapping("/usuarios-por-curso/{idCurso}")
+    public ResponseEntity<List<Matricula>> listarUsuariosPorCurso(@PathVariable UUID idCurso){
+        return ResponseEntity.status(200).body(service.listarUsuariosPorCurso(idCurso));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Matricula> atualizar(@RequestBody AtualizarDto dados, @PathVariable UUID id){
+        return ResponseEntity.status(200).body(service.atualizar(id, dados));
+    }
+
+    @PatchMapping("/{id}/{status}")
+    public ResponseEntity<Matricula> atualizarStatus(@PathVariable StatusMatricula status, @PathVariable UUID id){
+        return ResponseEntity.status(200).body(service.atualizarStatus(id, status));
+    }
+
+
+
+}
