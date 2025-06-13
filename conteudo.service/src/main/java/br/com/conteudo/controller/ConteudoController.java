@@ -1,6 +1,7 @@
 package br.com.conteudo.controller;
 
 import br.com.conteudo.dto.CadastroConteudoDto;
+import br.com.conteudo.exception.CursoNaoEncontradoException;
 import br.com.conteudo.service.ConteudoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,34 +20,22 @@ public class ConteudoController {
 
     @PostMapping
     public ResponseEntity<CadastroConteudoDto> saveConteudo(@RequestBody @Valid CadastroConteudoDto dto){
-        try {
             var conteudo = conteudoService.saveConteudo(dto);
             return ResponseEntity.status(201).body(conteudo);
-        }catch (RuntimeException e){
-            return ResponseEntity.status(409).build();
-        }
+
     }
 
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluirConteudo(@PathVariable UUID id){
-        try {
             conteudoService.deletarConteudo(id);
             return ResponseEntity.status(204).build();
-        }catch (RuntimeException e){
-            return ResponseEntity.status(404).build();
-        }
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<CadastroConteudoDto> atualizarConteudo(@PathVariable UUID id, @RequestBody CadastroConteudoDto dto){
-        try {
             var conteudo = conteudoService.atualizarConteudo(id, dto);
             return ResponseEntity.status(200).body(conteudo);
-        }catch (RuntimeException e){
-            return ResponseEntity.status(404).build();
-
-        }
     }
 
     @GetMapping

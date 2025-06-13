@@ -2,6 +2,9 @@ package br.com.conteudo.service;
 
 import br.com.conteudo.dto.CadastroConteudoDto;
 import br.com.conteudo.entity.Conteudo;
+import br.com.conteudo.exception.ConteudoNaoEncontradoException;
+import br.com.conteudo.exception.CursoNaoEncontradoException;
+import br.com.conteudo.exception.NenhumConteudoCadastradoException;
 import br.com.conteudo.mapper.ConteudoMapper;
 import br.com.conteudo.repository.ConteudoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +29,13 @@ public class ConteudoService {
     private RestTemplate restTemplate;
 
 
-    public CadastroConteudoDto saveConteudo(CadastroConteudoDto dto){
+    public CadastroConteudoDto saveConteudo(CadastroConteudoDto dto) {
         var requisicaoURL = "http://localhost:8084/conteudo/" + dto.idCurso();
 
         var curso = restTemplate.getForObject(requisicaoURL, Object.class);
 
         if (!conteudoRepository.existsById(dto.idCurso())){
-            throw new RuntimeException("Curso com esse ID não existe!");
+            throw new CursoNaoEncontradoException("Curso com esse ID não existe!");
         }
 
         var conteudo = new Conteudo();
@@ -46,9 +49,9 @@ public class ConteudoService {
 
     }
 
-    public void deletarConteudo(UUID id){
+    public void deletarConteudo(UUID id) {
         if (!conteudoRepository.existsById(id)){
-            throw new RuntimeException("Curso com esse ID não existe!");
+            throw new CursoNaoEncontradoException("Curso com esse ID não existe!");
         }
 
         conteudoRepository.deleteById(id);
@@ -59,7 +62,7 @@ public class ConteudoService {
         var conteudoEncontrado =conteudoRepository.findById(id);
 
         if (conteudoEncontrado.isEmpty()) {
-            throw new RuntimeException("Conteúdo com esse ID não existe!");
+            throw new ConteudoNaoEncontradoException("Conteúdo com esse ID não existe!");
         }
 
         var conteudo = conteudoEncontrado.get();
@@ -76,7 +79,7 @@ public class ConteudoService {
         var listaConteudo = conteudoRepository.findAll();
 
         if (listaConteudo.isEmpty()) {
-            throw new RuntimeException("Nenhum conteúdo cadastrado");
+            throw new NenhumConteudoCadastradoException("Nenhum conteúdo cadastrado");
         }
 
         var listaListagemConteudo = new ArrayList<CadastroConteudoDto>();
