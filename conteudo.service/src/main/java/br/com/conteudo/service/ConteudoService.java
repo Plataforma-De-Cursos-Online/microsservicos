@@ -8,6 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 @Service
 public class ConteudoService {
 
@@ -39,6 +44,48 @@ public class ConteudoService {
 
         return conteudoMapper.toDto(conteudo);
 
+    }
+
+    public void deletarConteudo(UUID id){
+        if (!conteudoRepository.existsById(id)){
+            throw new RuntimeException("Curso com esse ID não existe!");
+        }
+
+        conteudoRepository.deleteById(id);
+
+    }
+
+    public CadastroConteudoDto atualizarConteudo(UUID id, CadastroConteudoDto dto){
+        var conteudoEncontrado =conteudoRepository.findById(id);
+
+        if (conteudoEncontrado.isEmpty()) {
+            throw new RuntimeException("Conteúdo com esse ID não existe!");
+        }
+
+        var conteudo = conteudoEncontrado.get();
+        conteudo.setPdf(dto.pdf());
+        conteudo.setTitulo(dto.titulo());
+        conteudo.setVideo(dto.video());
+        conteudo.setIdCursos(dto.idCurso());
+        conteudoRepository.save(conteudo);
+
+        return conteudoMapper.toDto(conteudo);
+    }
+
+    public List<CadastroConteudoDto> listar(){
+        var listaConteudo = conteudoRepository.findAll();
+
+        if (listaConteudo.isEmpty()) {
+            throw new RuntimeException("Nenhum conteúdo cadastrado");
+        }
+
+        var listaListagemConteudo = new ArrayList<CadastroConteudoDto>();
+
+        listaConteudo.stream().forEach(
+                c ->listaListagemConteudo.add(conteudoMapper.toDto(c))
+        );
+
+        return listaListagemConteudo;
     }
 
 
