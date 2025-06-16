@@ -2,11 +2,14 @@ package br.com.matricula.service.service;
 
 import br.com.matricula.service.dto.AtualizarDto;
 import br.com.matricula.service.dto.CadastroDto;
+import br.com.matricula.service.dto.CursoDto;
+import br.com.matricula.service.dto.UsuarioDto;
 import br.com.matricula.service.entity.Matricula;
 import br.com.matricula.service.exception.NaoEncontradoException;
 import br.com.matricula.service.mapper.MatriculaMapper;
 import br.com.matricula.service.repository.MatriculaRepository;
 import br.com.matricula.service.tipos.StatusMatricula;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,39 +28,42 @@ public class MatriculaService {
         this.webClient = webClient;
     }
 
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+
     @Autowired
     MatriculaRepository repository;
 
     @Autowired
     MatriculaMapper matriculaMapper;
 
-    private boolean VerificarUsuario(UUID usuarioId) {
+    private UsuarioDto VerificarUsuario(UUID usuarioId) {
         try {
-            webClient.get()
+            return webClient.get()
                     .uri("http://localhost:8081/usuario/{id}", usuarioId)
                     .retrieve()
-                    .toBodilessEntity() // Só verifica se a resposta 2xx foi recebida
+                    .bodyToMono(UsuarioDto.class)
                     .block();
-            return true;
         } catch (WebClientResponseException.NotFound e) {
-            return false;
+            throw new NaoEncontradoException("Usuário não econtrado");
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao verificar usuário", e);
+            throw new RuntimeException("Erro ao buscar curso", e);
         }
     }
 
-    private boolean VerificarCurso(UUID cursoId) {
+    private CursoDto VerificarCurso(UUID cursoId) {
         try {
-            webClient.get()
+            return webClient.get()
                     .uri("http://localhost:8082/curso/{id}", cursoId)
                     .retrieve()
-                    .toBodilessEntity()
+                    .bodyToMono(CursoDto.class)
                     .block();
-            return true;
         } catch (WebClientResponseException.NotFound e) {
-            return false;
+            throw new NaoEncontradoException("Curso não econtrado");
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao verificar curso", e);
+            throw new RuntimeException("Erro ao buscar curso", e);
         }
     }
 
@@ -65,23 +71,19 @@ public class MatriculaService {
     public Matricula cadastrar (CadastroDto dados){
 
         Matricula matricula = matriculaMapper.cadadastrarDtoToEntity(dados);
-//
-        boolean usuarioExiste = VerificarUsuario(dados.idUsuario());
-//
-        boolean cursoExiste = VerificarCurso(dados.idCurso());
-//
-        if (!usuarioExiste) {
-            throw new NaoEncontradoException("Usuário não encontrado");
-        }
-//
-        if (!cursoExiste) {
-            throw new NaoEncontradoException("Curso não encontrado");
-        }
+
+        UsuarioDto usuario = VerificarUsuario(dados.idUsuario());
+
+        CursoDto curso = VerificarCurso(dados.idCurso());
 
         matricula.setStatus(StatusMatricula.MATRICULADO);
         matricula.setData(LocalDate.now());
 
-        return repository.save(matricula);
+        Matricula matriculaSalva =  repository.save(matricula);
+
+        rabbitTemplate.convertAndSend("matricula.confirmada", usuario);
+
+        return matriculaSalva;
     }
 
 
@@ -92,17 +94,6 @@ public class MatriculaService {
     }
 
     public Matricula atualizar(UUID id, AtualizarDto dados) {
-        boolean usuarioExiste = VerificarUsuario(dados.idUsuario());
-//
-        boolean cursoExiste = VerificarCurso(dados.idCurso());
-//
-        if (!usuarioExiste) {
-            throw new NaoEncontradoException("Usuário não encontrado");
-        }
-//
-        if (!cursoExiste) {
-            throw new NaoEncontradoException("Curso não encontrado");
-        }
 
         repository.findById(id).orElseThrow(() -> new NaoEncontradoException("Matricula não econtrada"));
 
@@ -125,22 +116,15 @@ public class MatriculaService {
 
     public List<Matricula> listarCursosPorUsuario(UUID id) {
 
-        boolean usuarioExiste = VerificarUsuario(id);
-
-        if (!usuarioExiste) {
-            throw new NaoEncontradoException("Usuário não encontrado");
-        }
+        VerificarUsuario(id);
 
         return repository.findAllByIdUsuario(id);
 
     }
 
     public List<Matricula> listarUsuariosPorCurso(UUID idCurso) {
-        boolean cursoExiste = VerificarCurso(idCurso);
 
-        if (!cursoExiste) {
-            throw new NaoEncontradoException("Curso não encontrado");
-        }
+        VerificarCurso(idCurso);
 
         return repository.findAllByIdCurso(idCurso);
 

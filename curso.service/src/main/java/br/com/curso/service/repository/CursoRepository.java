@@ -32,4 +32,3 @@ public interface CursoRepository extends JpaRepository<Curso, UUID> {
     List<NomeCursoDTO> buscarNomesDosCursos();
 }
 
-}
