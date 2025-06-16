@@ -7,13 +7,12 @@ import br.com.matricula.service.exception.NaoEncontradoException;
 import br.com.matricula.service.mapper.MatriculaMapper;
 import br.com.matricula.service.repository.MatriculaRepository;
 import br.com.matricula.service.tipos.StatusMatricula;
-import jakarta.persistence.Access;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import org.yaml.snakeyaml.events.Event;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,7 +31,7 @@ public class MatriculaService {
     @Autowired
     MatriculaMapper matriculaMapper;
 
-    private boolean verificarUsuario(UUID usuarioId) {
+    private boolean VerificarUsuario(UUID usuarioId) {
         try {
             webClient.get()
                     .uri("http://localhost:8081/usuario/{id}", usuarioId)
@@ -47,7 +46,7 @@ public class MatriculaService {
         }
     }
 
-    private boolean verificarCurso(UUID cursoId) {
+    private boolean VerificarCurso(UUID cursoId) {
         try {
             webClient.get()
                     .uri("http://localhost:8082/curso/{id}", cursoId)
@@ -67,17 +66,20 @@ public class MatriculaService {
 
         Matricula matricula = matriculaMapper.cadadastrarDtoToEntity(dados);
 //
-//        boolean usuarioExiste = verificarUsuario(dados.idUsuario());
+        boolean usuarioExiste = VerificarUsuario(dados.idUsuario());
 //
-//        boolean cursoExiste = verificarCurso(dados.idCurso());
+        boolean cursoExiste = VerificarCurso(dados.idCurso());
 //
-//        if (!usuarioExiste) {
-//            throw new NaoEncontradoException("Usuário não encontrado");
-//        }
+        if (!usuarioExiste) {
+            throw new NaoEncontradoException("Usuário não encontrado");
+        }
 //
-//        if (!cursoExiste) {
-//            throw new NaoEncontradoException("Curso não encontrado");
-//        }
+        if (!cursoExiste) {
+            throw new NaoEncontradoException("Curso não encontrado");
+        }
+
+        matricula.setStatus(StatusMatricula.MATRICULADO);
+        matricula.setData(LocalDate.now());
 
         return repository.save(matricula);
     }
@@ -90,17 +92,17 @@ public class MatriculaService {
     }
 
     public Matricula atualizar(UUID id, AtualizarDto dados) {
-//        boolean usuarioExiste = verificarUsuario(dados.idUsuario());
+        boolean usuarioExiste = VerificarUsuario(dados.idUsuario());
 //
-//        boolean cursoExiste = verificarCurso(dados.idCurso());
+        boolean cursoExiste = VerificarCurso(dados.idCurso());
 //
-//        if (!usuarioExiste) {
-//            throw new NaoEncontradoException("Usuário não encontrado");
-//        }
+        if (!usuarioExiste) {
+            throw new NaoEncontradoException("Usuário não encontrado");
+        }
 //
-//        if (!cursoExiste) {
-//            throw new NaoEncontradoException("Curso não encontrado");
-//        }
+        if (!cursoExiste) {
+            throw new NaoEncontradoException("Curso não encontrado");
+        }
 
         repository.findById(id).orElseThrow(() -> new NaoEncontradoException("Matricula não econtrada"));
 
@@ -123,22 +125,22 @@ public class MatriculaService {
 
     public List<Matricula> listarCursosPorUsuario(UUID id) {
 
-//        boolean usuarioExiste = verificarUsuario(dados.idUsuario());
-//
-//        if (!usuarioExiste) {
-//            throw new NaoEncontradoException("Usuário não encontrado");
-//        }
+        boolean usuarioExiste = VerificarUsuario(id);
+
+        if (!usuarioExiste) {
+            throw new NaoEncontradoException("Usuário não encontrado");
+        }
 
         return repository.findAllByIdUsuario(id);
 
     }
 
     public List<Matricula> listarUsuariosPorCurso(UUID idCurso) {
-//        boolean usuarioExiste = verificarUsuario(dados.idUsuario());
-//
-//        if (!usuarioExiste) {
-//            throw new NaoEncontradoException("Usuário não encontrado");
-//        }
+        boolean cursoExiste = VerificarCurso(idCurso);
+
+        if (!cursoExiste) {
+            throw new NaoEncontradoException("Curso não encontrado");
+        }
 
         return repository.findAllByIdCurso(idCurso);
 

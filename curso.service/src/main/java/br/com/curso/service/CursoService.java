@@ -41,12 +41,9 @@ public class CursoService {
     }
 
     public Curso listarUmCurso(UUID id) {
-        var endereco = cursoRepository.findById(id);
+        var endereco = cursoRepository.findById(id).orElseThrow(() -> new NaoEncontradoException("Curso com ID não encontrado!"));
 
-        if (endereco.isEmpty()) {
-            throw new NaoEncontradoException("Curso com ID não encontrado!");
-        }
-        return endereco.get();
+        return endereco;
     }
 
     public List<ListagemCursoDTO> getCursosDisponiveis() {

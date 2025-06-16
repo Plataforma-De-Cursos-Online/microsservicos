@@ -8,9 +8,6 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public record CadastroDto(
-        LocalDate data,
-        @Enumerated(EnumType.STRING)
-        StatusMatricula status,
         UUID idUsuario,
         UUID idCurso
     )

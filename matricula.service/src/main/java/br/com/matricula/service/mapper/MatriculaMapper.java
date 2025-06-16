@@ -10,8 +10,6 @@ public class MatriculaMapper {
 
     public Matricula cadadastrarDtoToEntity(CadastroDto dto) {
         Matricula matricula = new Matricula();
-        matricula.setData(dto.data());
-        matricula.setStatus(dto.status());
         matricula.setIdUsuario(dto.idUsuario());
         matricula.setIdCurso(dto.idCurso());
         return matricula;
