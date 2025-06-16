@@ -10,6 +10,8 @@ import br.com.conteudo.repository.ConteudoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.sql.Array;
 import java.util.ArrayList;
@@ -28,13 +30,17 @@ public class ConteudoService {
     @Autowired
     private RestTemplate restTemplate;
 
+    private final WebClient webClient;
+
+    public ConteudoService(WebClient webClient) {
+        this.webClient = webClient;
+    }
+
 
     public CadastroConteudoDto saveConteudo(CadastroConteudoDto dto) {
-        var requisicaoURL = "http://localhost:8084/conteudo/" + dto.idCurso();
+       boolean verificarCurso = VerificarCurso(dto.idCurso());
 
-        var curso = restTemplate.getForObject(requisicaoURL, Object.class);
-
-        if (!conteudoRepository.existsById(dto.idCurso())){
+        if (verificarCurso == false){
             throw new CursoNaoEncontradoException("Curso com esse ID não existe!");
         }
 
@@ -47,6 +53,21 @@ public class ConteudoService {
 
         return conteudoMapper.toDto(conteudo);
 
+    }
+
+    private boolean VerificarCurso(UUID cursoId) {
+        try {
+            webClient.get()
+                    .uri("http://localhost:8082/curso", cursoId)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+            return true;
+        } catch (WebClientResponseException.NotFound e) {
+            return false;
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao verificar curso", e);
+        }
     }
 
     public void deletarConteudo(UUID id) {
