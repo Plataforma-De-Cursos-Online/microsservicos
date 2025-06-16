@@ -63,4 +63,9 @@ public class UsuarioController {
         return ResponseEntity.status(204).build();
     }
 
+    @GetMapping("/subject")
+    public ResponseEntity<ListagemUsuarioDTO> getSubjectByToken(@RequestHeader("Authorization") String authorizationHeader) {
+        return ResponseEntity.ok(usuarioService.getSubjectByToken(authorizationHeader));
+    }
+
 }

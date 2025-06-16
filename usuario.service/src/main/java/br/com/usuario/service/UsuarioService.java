@@ -156,4 +156,19 @@ public class UsuarioService {
 
         return usuarioMapper.toListagemUsuarioDTO(user);
     }
+
+    public ListagemUsuarioDTO getSubjectByToken(String authorizationHeader) {
+
+        var token = extractToken(authorizationHeader);
+        var subject = tokenService.validateToken(token);
+        return new ListagemUsuarioDTO(subject);
+    }
+
+    public String extractToken(String authorizationHeader) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7);
+        } else {
+            throw new RuntimeException("Token inválido ou ausente no cabeçalho Authorization");
+        }
+    }
 }
