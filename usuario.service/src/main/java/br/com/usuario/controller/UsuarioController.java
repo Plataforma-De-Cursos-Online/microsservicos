@@ -1,8 +1,6 @@
 package br.com.usuario.controller;
 
-import br.com.usuario.dto.CadastroUsuarioDTO;
-import br.com.usuario.dto.ListagemUsuarioDTO;
-import br.com.usuario.dto.LoginUsuarioDTO;
+import br.com.usuario.dto.*;
 import br.com.usuario.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,14 +37,30 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.getUserById(id));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ListagemUsuarioDTO> updateUser(@PathVariable UUID id, @RequestBody @Valid CadastroUsuarioDTO dto) {
+        return ResponseEntity.ok(usuarioService.updateUser(id, dto));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ListagemUsuarioDTO> updateUserName(@PathVariable UUID id, @RequestBody @Valid UpdateUserNameDTO dto) {
+        return ResponseEntity.ok(usuarioService.updateUserName(id, dto));
+    }
+
+    @PatchMapping("/login/{id}")
+    public ResponseEntity<ListagemUsuarioDTO> updateUserLogin(@PathVariable UUID id, @RequestBody @Valid UpdateUserLogin dto) {
+        return ResponseEntity.ok(usuarioService.updateUserLogin(id, dto));
+    }
+
+    @PatchMapping("/password/{id}")
+    public ResponseEntity<ListagemUsuarioDTO> updateUserPassword(@PathVariable UUID id, @RequestBody @Valid UpdateUserPassword dto) {
+        return ResponseEntity.ok(usuarioService.updateUserPassword(id, dto));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUserById(@PathVariable UUID id) {
         usuarioService.deleteUserById(id);
         return ResponseEntity.status(204).build();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ListagemUsuarioDTO> updateUser(@PathVariable UUID id, @RequestBody @Valid CadastroUsuarioDTO dto) {
-        return ResponseEntity.ok(usuarioService.updateUser(id, dto));
-    }
 }

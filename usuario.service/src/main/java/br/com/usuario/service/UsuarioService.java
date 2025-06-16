@@ -1,8 +1,6 @@
 package br.com.usuario.service;
 
-import br.com.usuario.dto.CadastroUsuarioDTO;
-import br.com.usuario.dto.ListagemUsuarioDTO;
-import br.com.usuario.dto.LoginUsuarioDTO;
+import br.com.usuario.dto.*;
 import br.com.usuario.entity.Usuario;
 import br.com.usuario.exception.EmailExistenteException;
 import br.com.usuario.exception.NaoEncontradoException;
@@ -109,6 +107,51 @@ public class UsuarioService {
         user.setTipo_usuario(TipoUsuario.fromString(dto.tipoUsuario()));
         user.setPassword(new BCryptPasswordEncoder().encode(dto.password()));
 
+        usuarioRepository.save(user);
+
+        return usuarioMapper.toListagemUsuarioDTO(user);
+    }
+
+    public ListagemUsuarioDTO updateUserName(UUID id, UpdateUserNameDTO dto) {
+
+        var userFind = usuarioRepository.findById(id);
+
+        if (userFind.isEmpty()) {
+            throw new NaoEncontradoException("Usuário não encontrado");
+        }
+
+        var user = userFind.get();
+        user.setNome(dto.name());
+        usuarioRepository.save(user);
+
+        return usuarioMapper.toListagemUsuarioDTO(user);
+    }
+
+    public ListagemUsuarioDTO updateUserLogin(UUID id, UpdateUserLogin dto) {
+
+        var userFind = usuarioRepository.findById(id);
+
+        if (userFind.isEmpty()) {
+            throw new NaoEncontradoException("Usuário não encontrado");
+        }
+
+        var user = userFind.get();
+        user.setLogin(dto.login());
+        usuarioRepository.save(user);
+
+        return usuarioMapper.toListagemUsuarioDTO(user);
+    }
+
+    public ListagemUsuarioDTO updateUserPassword(UUID id, UpdateUserPassword dto) {
+
+        var userFind = usuarioRepository.findById(id);
+
+        if (userFind.isEmpty()) {
+            throw new NaoEncontradoException("Usuário não encontrado");
+        }
+
+        var user = userFind.get();
+        user.setPassword(new BCryptPasswordEncoder().encode(dto.password()));
         usuarioRepository.save(user);
 
         return usuarioMapper.toListagemUsuarioDTO(user);
