@@ -38,4 +38,10 @@ public class UsuarioController {
     public ResponseEntity<ListagemUsuarioDTO> getUserById(@PathVariable UUID id) {
         return ResponseEntity.ok(usuarioService.getUserById(id));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUserById(@PathVariable UUID id) {
+        usuarioService.deleteUserById(id);
+        return ResponseEntity.status(204).build();
+    }
 }

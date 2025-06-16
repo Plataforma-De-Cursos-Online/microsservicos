@@ -86,4 +86,13 @@ public class UsuarioService {
 
         return usuarioMapper.toListagemUsuarioDTO(userFind.get());
     }
+
+    public void deleteUserById(UUID id) {
+
+        if (!usuarioRepository.existsById(id)) {
+            throw new NaoEncontradoException("Usuário não encontrado");
+        }
+
+        usuarioRepository.deleteById(id);
+    }
 }
