@@ -1,6 +1,7 @@
 package br.com.curso.service.repository;
 
 import br.com.curso.service.dto.ListagemCursoDTO;
+import br.com.curso.service.dto.NomeCursoDTO;
 import br.com.curso.service.entity.Curso;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -24,5 +25,11 @@ public interface CursoRepository extends JpaRepository<Curso, UUID> {
         WHERE c.disponivel = TRUE
     """)
     List<ListagemCursoDTO> listarCursosDisponiveis();
+
+    List<Curso> findByDisponivel(Boolean disponivel);
+
+    @Query("SELECT new br.com.curso.service.dto.NomeCursoDTO(c.titulo) FROM Curso c")
+    List<NomeCursoDTO> buscarNomesDosCursos();
+}
 
 }
