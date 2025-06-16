@@ -8,6 +8,7 @@ import br.com.matricula.service.repository.MatriculaRepository;
 import br.com.matricula.service.tipos.StatusMatricula;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -64,21 +65,54 @@ public class MatriculaService {
         }
     }
 
+    private EmailDto GetEmail(String token) {
+        try {
+            return webClient.get()
+                    .uri("http://localhost:8081/usuario/subject")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                    .retrieve()
+                    .bodyToMono(EmailDto.class)
+                    .block();
+        } catch (WebClientResponseException.NotFound e) {
+            throw new NaoEncontradoException("Email não econtrado");
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar curso", e);
+        }
+    }
+
+    private IdDto GetId(String email) {
+        try {
+            return webClient.post()
+                    .uri("http://localhost:8081/usuario/login")
+                    .bodyValue(email)
+                    .retrieve()
+                    .bodyToMono(IdDto.class)
+                    .block();
+        } catch (WebClientResponseException.NotFound e) {
+            throw new NaoEncontradoException("ID não encontrado");
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar curso", e);
+        }
+    }
 
     public Matricula cadastrar (CadastroDto dados){
 
         Matricula matricula = matriculaMapper.cadadastrarDtoToEntity(dados);
-
         UsuarioDto usuario = VerificarUsuario(dados.idUsuario());
-
         CursoDto curso = VerificarCurso(dados.idCurso());
+
+        EmailUsuarioCursoDto emailCorpo = null;
+        emailCorpo.setDescricao(curso.descricao());
+        emailCorpo.setTitulo(curso.titulo());
+        emailCorpo.setNome(usuario.nome());
+        emailCorpo.setLogin(usuario.login());
 
         matricula.setStatus(StatusMatricula.MATRICULADO);
         matricula.setData(LocalDate.now());
 
         Matricula matriculaSalva =  repository.save(matricula);
 
-        rabbitTemplate.convertAndSend("matricula.confirmada", usuario);
+        rabbitTemplate.convertAndSend("matricula.confirmada", emailCorpo);
 
         return matriculaSalva;
     }
@@ -124,6 +158,62 @@ public class MatriculaService {
         VerificarCurso(idCurso);
 
         return repository.listarUsuariosPorCurso(idCurso);
+
+    }
+
+//    public List<CadastroConteudoDto> listarPorId(String authorizationHeader, UUID idCurso) {
+//        var token = extractToken(authorizationHeader);
+//
+//        try {
+//            ListagemUsuarioDTO usuario = webClient.get()
+//                    .uri("http://localhost:8080/api/usuario/subject")
+//                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+//                    .retrieve()
+//                    .bodyToMono(ListagemUsuarioDTO.class)
+//                    .block();
+//
+//            System.out.println(usuario.login());
+//
+//            UUID usuarioMatriculado = webClient.get()
+//                    .uri(uriBuilder -> uriBuilder
+//                            .path("http://localhost:8080/api/usuario/login")
+//                            .queryParam("login", usuario.login())
+//                            .build())
+//                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+//                    .retrieve()
+//                    .bodyToMono(UUID.class)
+//                    .block();
+//
+//            System.out.println(usuarioMatriculado);
+//
+//            // Aqui faltou retornar algo. Por exemplo:
+//            // return someService.getConteudosPorCursoEUsuario(idCurso, usuarioMatriculado);
+//            return null; // Placeholder até que se saiba o que deve ser retornado
+//
+//        } catch (WebClientResponseException.NotFound e) {
+//            return null;
+//        } catch (Exception e) {
+//            throw new RuntimeException("Erro ao buscar login do usuário", e);
+//        }
+//    }
+
+    public String extractToken(String authorizationHeader) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7);
+        } else {
+            throw new RuntimeException("Token inválido ou ausente no cabeçalho Authorization");
+        }
+    }
+
+    public Boolean verificarMatricula(UUID idCurso, String authorizationHeader) {
+
+        EmailDto email = GetEmail(authorizationHeader);
+
+        IdDto idUsuario = GetId(email.login());
+
+        Matricula check = repository.validarMatricula(idCurso, idUsuario).orElseThrow(() -> new NaoEncontradoException("Nao encontrado"));
+
+        return true;
 
     }
 }

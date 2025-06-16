@@ -1,5 +1,6 @@
 package br.com.matricula.service.listen;
 
+import br.com.matricula.service.dto.EmailUsuarioCursoDto;
 import br.com.matricula.service.dto.UsuarioDto;
 import br.com.matricula.service.service.EmailServiceMatricula;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -14,10 +15,10 @@ public class MatriculaListen {
     EmailServiceMatricula emailServiceMatricula;
 
     @RabbitListener(queues = "matricula.confirmada")
-    public void ouvirPedido(UsuarioDto usuario) {
+    public void ouvirPedido(EmailUsuarioCursoDto emailCorpo) {
 
-        emailServiceMatricula.enviarConfirmacaoTransacao(usuario);
-        System.out.println("Login: " + usuario.login() + " Nome: " + usuario.nome());
+        emailServiceMatricula.enviarConfirmacaoTransacao(emailCorpo);
+        System.out.println("Login: " + emailCorpo.getLogin() + " Nome: " + emailCorpo.getNome());
     }
 
 }
