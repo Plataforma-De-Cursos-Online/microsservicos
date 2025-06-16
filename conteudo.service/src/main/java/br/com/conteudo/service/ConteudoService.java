@@ -1,6 +1,7 @@
 package br.com.conteudo.service;
 
 import br.com.conteudo.dto.CadastroConteudoDto;
+import br.com.conteudo.dto.ListagemUsuarioDTO;
 import br.com.conteudo.entity.Conteudo;
 import br.com.conteudo.exception.ConteudoNaoEncontradoException;
 import br.com.conteudo.exception.CursoNaoEncontradoException;
@@ -8,6 +9,9 @@ import br.com.conteudo.exception.NenhumConteudoCadastradoException;
 import br.com.conteudo.mapper.ConteudoMapper;
 import br.com.conteudo.repository.ConteudoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.token.TokenService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -35,6 +39,12 @@ public class ConteudoService {
     public ConteudoService(WebClient webClient) {
         this.webClient = webClient;
     }
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private TokenService tokenService;
 
 
     public CadastroConteudoDto saveConteudo(CadastroConteudoDto dto) {
@@ -96,7 +106,24 @@ public class ConteudoService {
         return conteudoMapper.toDto(conteudo);
     }
 
-    public List<CadastroConteudoDto> listar(){
+    public List<CadastroConteudoDto> listar(String authorizationHeader){
+        var token = extractToken(authorizationHeader);
+
+        try {
+            ListagemUsuarioDTO usuario = webClient.get()
+                    .uri("http://localhost:8081/usuario/subject")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                    .retrieve()
+                    .bodyToMono(ListagemUsuarioDTO.class)
+                    .block();
+
+
+        } catch (WebClientResponseException.NotFound e) {
+            return null;
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar login do usuário", e);
+        }
+
         var listaConteudo = conteudoRepository.findAll();
 
         if (listaConteudo.isEmpty()) {
@@ -110,6 +137,14 @@ public class ConteudoService {
         );
 
         return listaListagemConteudo;
+    }
+
+    public String extractToken(String authorizationHeader) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7);
+        } else {
+            throw new RuntimeException("Token inválido ou ausente no cabeçalho Authorization");
+        }
     }
 
 

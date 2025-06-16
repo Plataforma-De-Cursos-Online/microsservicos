@@ -39,8 +39,8 @@ public class ConteudoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CadastroConteudoDto>> listarConteudo(){
-            var conteudo = conteudoService.listar();
+    public ResponseEntity<List<CadastroConteudoDto>> listarConteudo(@RequestHeader("Authorization") String authorizationHeader){
+            var conteudo = conteudoService.listar(authorizationHeader);
             return ResponseEntity.status(200).body(conteudo);
 
     }
