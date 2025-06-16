@@ -1,9 +1,6 @@
 package br.com.matricula.service.controller;
 
-import br.com.matricula.service.dto.AtualizarDto;
-import br.com.matricula.service.dto.CadastroDto;
-import br.com.matricula.service.dto.CursoDto;
-import br.com.matricula.service.dto.ListagemCursoMatricula;
+import br.com.matricula.service.dto.*;
 import br.com.matricula.service.entity.Matricula;
 import br.com.matricula.service.service.MatriculaService;
 import br.com.matricula.service.tipos.StatusMatricula;
@@ -37,7 +34,7 @@ public class MatriculaController {
     }
 
     @GetMapping("/usuarios-por-curso/{idCurso}")
-    public ResponseEntity<List<Matricula>> listarUsuariosPorCurso(@PathVariable UUID idCurso){
+    public ResponseEntity<List<ListagemUsuarioMatricula>> listarUsuariosPorCurso(@PathVariable UUID idCurso){
         return ResponseEntity.status(200).body(service.listarUsuariosPorCurso(idCurso));
     }
 

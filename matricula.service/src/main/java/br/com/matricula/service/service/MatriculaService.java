@@ -119,11 +119,11 @@ public class MatriculaService {
 
     }
 
-    public List<Matricula> listarUsuariosPorCurso(UUID idCurso) {
+    public List<ListagemUsuarioMatricula> listarUsuariosPorCurso(UUID idCurso) {
 
         VerificarCurso(idCurso);
 
-        return repository.findAllByIdCurso(idCurso);
+        return repository.listarUsuariosPorCurso(idCurso);
 
     }
 }

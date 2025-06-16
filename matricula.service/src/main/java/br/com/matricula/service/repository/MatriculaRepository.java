@@ -2,6 +2,7 @@ package br.com.matricula.service.repository;
 
 import br.com.matricula.service.dto.CursoDto;
 import br.com.matricula.service.dto.ListagemCursoMatricula;
+import br.com.matricula.service.dto.ListagemUsuarioMatricula;
 import br.com.matricula.service.entity.Matricula;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,9 +12,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface MatriculaRepository extends JpaRepository<Matricula, UUID> {
-    List<Matricula> findAllByIdUsuario(UUID id);
-
-    List<Matricula> findAllByIdCurso(UUID idCurso);
 
     @Query(value = """
     SELECT
@@ -29,5 +27,16 @@ public interface MatriculaRepository extends JpaRepository<Matricula, UUID> {
     """, nativeQuery = true)
     List<ListagemCursoMatricula> listarCursosPorUsuario(@Param("id") UUID id);
 
-
+    @Query(value = """
+            SELECT
+              u.nome,
+              u.login
+            FROM
+              matricula m
+            JOIN
+              usuario u ON m.id_usuario = u.id
+            WHERE
+              m.id_curso = :idCurso
+            """, nativeQuery = true)
+    List<ListagemUsuarioMatricula> listarUsuariosPorCurso(UUID idCurso);
 }
