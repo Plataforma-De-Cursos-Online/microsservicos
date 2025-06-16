@@ -44,4 +44,9 @@ public class UsuarioController {
         usuarioService.deleteUserById(id);
         return ResponseEntity.status(204).build();
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ListagemUsuarioDTO> updateUser(@PathVariable UUID id, @RequestBody @Valid CadastroUsuarioDTO dto) {
+        return ResponseEntity.ok(usuarioService.updateUser(id, dto));
+    }
 }

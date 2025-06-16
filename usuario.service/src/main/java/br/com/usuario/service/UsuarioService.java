@@ -95,4 +95,22 @@ public class UsuarioService {
 
         usuarioRepository.deleteById(id);
     }
+
+    public ListagemUsuarioDTO updateUser(UUID id, CadastroUsuarioDTO dto) {
+
+        var userFind = usuarioRepository.findById(id);
+
+        if (userFind.isEmpty()) {
+            throw new NaoEncontradoException("Usuário não encontrado");
+        }
+
+        var user = userFind.get();
+        user = usuarioMapper.toEntity(dto);
+        user.setTipo_usuario(TipoUsuario.fromString(dto.tipoUsuario()));
+        user.setPassword(new BCryptPasswordEncoder().encode(dto.password()));
+
+        usuarioRepository.save(user);
+
+        return usuarioMapper.toListagemUsuarioDTO(user);
+    }
 }
