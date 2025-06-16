@@ -1,9 +1,6 @@
 package br.com.matricula.service.service;
 
-import br.com.matricula.service.dto.AtualizarDto;
-import br.com.matricula.service.dto.CadastroDto;
-import br.com.matricula.service.dto.CursoDto;
-import br.com.matricula.service.dto.UsuarioDto;
+import br.com.matricula.service.dto.*;
 import br.com.matricula.service.entity.Matricula;
 import br.com.matricula.service.exception.NaoEncontradoException;
 import br.com.matricula.service.mapper.MatriculaMapper;
@@ -114,11 +111,11 @@ public class MatriculaService {
         return repository.save(matricula);
     }
 
-    public List<Matricula> listarCursosPorUsuario(UUID id) {
+    public List<ListagemCursoMatricula> listarCursosPorUsuario(UUID id) {
 
         VerificarUsuario(id);
 
-        return repository.findAllByIdUsuario(id);
+        return repository.listarCursosPorUsuario(id);
 
     }
 
