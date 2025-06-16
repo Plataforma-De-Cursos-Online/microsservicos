@@ -37,6 +37,11 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.getUserById(id));
     }
 
+    @GetMapping("/login")
+    public ResponseEntity<UUID> getUserByLogin(@RequestBody ListagemUsuarioDTO dto) {
+        return ResponseEntity.ok(usuarioService.getUserByLogin(dto));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<ListagemUsuarioDTO> updateUser(@PathVariable UUID id, @RequestBody @Valid CadastroUsuarioDTO dto) {
         return ResponseEntity.ok(usuarioService.updateUser(id, dto));
