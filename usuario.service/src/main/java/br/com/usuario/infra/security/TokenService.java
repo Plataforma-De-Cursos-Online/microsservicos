@@ -25,7 +25,7 @@ public class TokenService {
         try {
             String token = JWT.create()
                     .withIssuer("mony-squad")
-                    .withSubject(String.valueOf(usuario.getId()))
+                    .withSubject(usuario.getLogin())
                     .withExpiresAt(genExpirationDate())
                     .sign(algorithm);
             return token;
