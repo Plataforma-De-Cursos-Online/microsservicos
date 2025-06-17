@@ -84,6 +84,7 @@ public class MatriculaService {
         try {
             return webClient.post()
                     .uri("http://localhost:8081/usuario/login")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJtb255LXNxdWFkIiwic3ViIjoibWFpa29uLnByb2pldG9zQGdtYWlsLmNvbSIsImV4cCI6MTc1MDE3NTk3NH0.pZb9qxwawpm43_YDZaLuGYJ3TzYxTk9_iUdAwziimLA" )
                     .bodyValue(email)
                     .retrieve()
                     .bodyToMono(IdDto.class)
@@ -101,11 +102,7 @@ public class MatriculaService {
         UsuarioDto usuario = VerificarUsuario(dados.idUsuario());
         CursoDto curso = VerificarCurso(dados.idCurso());
 
-        EmailUsuarioCursoDto emailCorpo = null;
-        emailCorpo.setDescricao(curso.descricao());
-        emailCorpo.setTitulo(curso.titulo());
-        emailCorpo.setNome(usuario.nome());
-        emailCorpo.setLogin(usuario.login());
+        EmailUsuarioCursoDto emailCorpo = new EmailUsuarioCursoDto(usuario.login(), usuario.nome(), curso.titulo(), curso.descricao());
 
         matricula.setStatus(StatusMatricula.MATRICULADO);
         matricula.setData(LocalDate.now());
