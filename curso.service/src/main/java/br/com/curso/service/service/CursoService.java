@@ -1,4 +1,4 @@
-package br.com.curso.service;
+package br.com.curso.service.service;
 
 import br.com.curso.service.dto.CadastroCursoDTO;
 import br.com.curso.service.dto.ListagemCursoDTO;

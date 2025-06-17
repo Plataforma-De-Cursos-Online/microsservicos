@@ -1,6 +1,6 @@
 package br.com.curso.service.controller;
 
-import br.com.curso.service.CursoService;
+import br.com.curso.service.service.CursoService;
 import br.com.curso.service.dto.*;
 import br.com.curso.service.entity.Curso;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +77,6 @@ public class CursoController {
 
     @GetMapping
     public ResponseEntity<List<Curso>> listarTodos() {
-        return ResponseEntity.status(200).build();
+        return ResponseEntity.status(200).body(cursoService.listarTodos());
     }
 }

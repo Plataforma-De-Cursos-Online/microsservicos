@@ -38,13 +38,6 @@ public class ConteudoController {
             return ResponseEntity.status(200).body(conteudo);
     }
 
-    @GetMapping
-    public ResponseEntity<List<CadastroConteudoDto>> listarConteudo(@RequestHeader("Authorization") String authorizationHeader){
-            var conteudo = conteudoService.listar(authorizationHeader);
-            return ResponseEntity.status(200).body(conteudo);
-
-    }
-
     @GetMapping("/{idCurso}")
     public ResponseEntity<List<CadastroConteudoDto>> listarConteudoPorId(@RequestHeader("Authorization") String authorizationHeader, @PathVariable UUID idCurso){
         try {

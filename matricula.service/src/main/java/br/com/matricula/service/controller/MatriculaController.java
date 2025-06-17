@@ -43,10 +43,10 @@ public class MatriculaController {
         return ResponseEntity.status(200).body(service.atualizar(id, dados));
     }
 
-    @PatchMapping("/{id}/{status}")
-    public ResponseEntity<Matricula> atualizarStatus(@PathVariable StatusMatricula status, @PathVariable UUID id){
-        return ResponseEntity.status(200).body(service.atualizarStatus(id, status));
-    }
+        @PatchMapping("/{id}/{status}")
+        public ResponseEntity<Matricula> atualizarStatus(@PathVariable StatusMatricula status, @PathVariable UUID id){
+            return ResponseEntity.status(200).body(service.atualizarStatus(id, status));
+        }
 
     @GetMapping("/verificar-matricula/{idCurso}")
     public ResponseEntity<Boolean> verificarMatricula(@PathVariable UUID idCurso, @RequestHeader("Authorization")  String authorizationHeader){
