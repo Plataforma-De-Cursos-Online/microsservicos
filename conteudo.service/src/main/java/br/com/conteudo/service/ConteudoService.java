@@ -142,11 +142,11 @@ public class ConteudoService {
 
         System.out.println(token);
         try {
-            boolean id = webClient.get()
-                    .uri("http://localhost:8080/api/matricula/verificar-matricula/" +  idCurso)
+            Boolean id = webClient.get()
+                    .uri("http://localhost:8083/matricula/verificar-matricula/" +  idCurso)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                     .retrieve()
-                    .bodyToMono(boolean.class)
+                    .bodyToMono(Boolean.class)
                     .block();
 
             if (id == true){
@@ -159,6 +159,7 @@ public class ConteudoService {
 
                 return listaListagemConteudo;
             } else {
+                //Necessário criar exception personalizada para 403 com mensagem
                 throw new RuntimeException("Acessso negado aos conteúdos!");
             }
 

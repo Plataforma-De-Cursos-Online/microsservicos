@@ -99,14 +99,14 @@ public class UsuarioService {
         return usuarioMapper.toListagemUsuarioDTO(userFind.get());
     }
 
-    public UUID getUserByLogin(ListagemUsuarioDTO dto) {
+    public IdDto getUserByLogin(ListagemUsuarioDTO dto) {
         var userFind = usuarioRepository.findByLoginUUID(dto.login());
 
         if (userFind == null) {
             throw new NaoEncontradoException("Usuário não encontrado");
         }
 
-        return userFind;
+        return new IdDto(userFind);
     }
 
     public void deleteUserById(UUID id) {

@@ -32,6 +32,8 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.POST, "/usuario").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuario/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/usuario/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/usuario/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/usuario/loginByEmail ").permitAll()
                         .requestMatchers(HttpMethod.GET, "/usuario/subject").permitAll()
                         .requestMatchers(HttpMethod.GET, "/usuario").hasRole("ADMIN")
                         .anyRequest().authenticated()

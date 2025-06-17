@@ -80,14 +80,14 @@ public class MatriculaService {
         }
     }
 
-    private IdDto GetId(String email) {
+    private Object GetId(EmailDto email, String token) {
         try {
             return webClient.post()
-                    .uri("http://localhost:8081/usuario/login")
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJtb255LXNxdWFkIiwic3ViIjoibWFpa29uLnByb2pldG9zQGdtYWlsLmNvbSIsImV4cCI6MTc1MDE3NTk3NH0.pZb9qxwawpm43_YDZaLuGYJ3TzYxTk9_iUdAwziimLA" )
+                    .uri("http://localhost:8081/usuario/loginByEmail")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                     .bodyValue(email)
                     .retrieve()
-                    .bodyToMono(IdDto.class)
+                    .bodyToMono(Object.class)
                     .block();
         } catch (WebClientResponseException.NotFound e) {
             throw new NaoEncontradoException("ID não encontrado");
@@ -204,11 +204,22 @@ public class MatriculaService {
 
     public Boolean verificarMatricula(UUID idCurso, String authorizationHeader) {
 
-        EmailDto email = GetEmail(authorizationHeader);
+        System.out.println(authorizationHeader);
 
-        IdDto idUsuario = GetId(email.login());
+        String tokenCompleto = authorizationHeader;
+        String tokenLimpo = tokenCompleto.replace("Bearer ", "");
 
-        Matricula check = repository.validarMatricula(idCurso, idUsuario).orElseThrow(() -> new NaoEncontradoException("Nao encontrado"));
+        EmailDto email = GetEmail(tokenLimpo);
+
+        Object idUsuario = GetId(email, tokenLimpo);
+
+        String idBruto = idUsuario.toString().replace("id=", "");
+        String idLimpo = idBruto.toString().replace("{", "");
+        String id = idLimpo.toString().replace("}", "");
+
+        System.out.println(id);
+
+        Matricula check = repository.validarMatricula(idCurso, UUID.fromString(id)).orElseThrow(() -> new NaoEncontradoException("Nao encontrado"));
 
         return true;
 

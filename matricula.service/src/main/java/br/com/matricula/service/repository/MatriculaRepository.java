@@ -44,11 +44,11 @@ public interface MatriculaRepository extends JpaRepository<Matricula, UUID> {
 
     @Query(value = """
             SELECT
-              m.id_curso
+              *
             FROM
               matricula m
             WHERE
               m.id_curso = :idCurso AND m.id_usuario = :idUsuario
             """, nativeQuery = true)
-    Optional<Matricula> validarMatricula(UUID idCurso, IdDto idUsuario);
+    Optional<Matricula> validarMatricula(UUID idCurso, UUID idUsuario);
 }

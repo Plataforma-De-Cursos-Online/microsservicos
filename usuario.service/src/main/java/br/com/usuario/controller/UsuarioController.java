@@ -37,8 +37,8 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.getUserById(id));
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<UUID> getUserByLogin(@RequestBody ListagemUsuarioDTO dto) {
+    @PostMapping("/loginByEmail")
+    public ResponseEntity<Object> getUserByLogin(@RequestBody ListagemUsuarioDTO dto) {
         return ResponseEntity.ok(usuarioService.getUserByLogin(dto));
     }
 
