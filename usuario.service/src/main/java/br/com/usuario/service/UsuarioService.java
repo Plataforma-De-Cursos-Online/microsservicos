@@ -114,6 +114,7 @@ public class UsuarioService {
 
         var user = userFind.get();
         user = usuarioMapper.toEntity(dto);
+        user.setId(id);
         user.setTipo_usuario(TipoUsuario.fromString(dto.tipoUsuario()));
         user.setPassword(new BCryptPasswordEncoder().encode(dto.password()));
 
