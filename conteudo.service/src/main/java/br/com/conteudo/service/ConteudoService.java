@@ -10,13 +10,12 @@ import br.com.conteudo.mapper.ConteudoMapper;
 import br.com.conteudo.repository.ConteudoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.token.TokenService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import javax.sound.midi.MidiChannel;
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,11 +39,6 @@ public class ConteudoService {
         this.webClient = webClient;
     }
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private TokenService tokenService;
 
 
     public CadastroConteudoDto saveConteudo(CadastroConteudoDto dto) {
@@ -111,13 +105,14 @@ public class ConteudoService {
 
         try {
             ListagemUsuarioDTO usuario = webClient.get()
-                    .uri("http://localhost:8081/usuario/subject")
+                    .uri("http://localhost:8080/api/usuario/subject")
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                     .retrieve()
                     .bodyToMono(ListagemUsuarioDTO.class)
                     .block();
 
 
+            System.out.println(usuario.login());
         } catch (WebClientResponseException.NotFound e) {
             return null;
         } catch (Exception e) {
@@ -137,6 +132,38 @@ public class ConteudoService {
         );
 
         return listaListagemConteudo;
+    }
+
+    public List<CadastroConteudoDto> listarPorId(String authorizationHeader, UUID idCurso){
+        var token = extractToken(authorizationHeader);
+
+        try {
+            boolean id = webClient.get()
+                    .uri("http://localhost:8080/api/matricula/verificar-matricula/" +  idCurso)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                    .retrieve()
+                    .bodyToMono(boolean.class)
+                    .block();
+
+            if (id == true){
+                var listaConteudo = conteudoRepository.findAllConteudo(idCurso);
+                var listaListagemConteudo = new ArrayList<CadastroConteudoDto>();
+
+                listaConteudo.stream().forEach(
+                        c ->listaListagemConteudo.add(conteudoMapper.toDto(c))
+                );
+
+                return listaListagemConteudo;
+            } else {
+                throw new RuntimeException("Acessso negado aos conteúdos!");
+            }
+
+        } catch (WebClientResponseException.NotFound e) {
+            return null;
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar login do usuário", e);
+        }
+
     }
 
     public String extractToken(String authorizationHeader) {

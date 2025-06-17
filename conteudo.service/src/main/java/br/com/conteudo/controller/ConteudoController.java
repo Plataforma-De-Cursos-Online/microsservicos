@@ -45,5 +45,14 @@ public class ConteudoController {
 
     }
 
+    @GetMapping("/{idCurso}")
+    public ResponseEntity<List<CadastroConteudoDto>> listarConteudoPorId(@RequestHeader("Authorization") String authorizationHeader, @PathVariable UUID idCurso){
+        var conteudo = conteudoService.listarPorId(authorizationHeader, idCurso);
+        return ResponseEntity.status(200).body(conteudo);
+
+    }
+
+
+
 
 }
