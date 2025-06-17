@@ -54,7 +54,7 @@ public class CursoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Curso> findById(@PathVariable UUID id) {
-        return ResponseEntity.status(200).build();
+        return ResponseEntity.status(200).body(cursoService.listarUmCurso(id));
     }
 
     @GetMapping("/disponiveis")

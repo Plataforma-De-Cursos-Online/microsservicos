@@ -16,12 +16,27 @@ public class EmailServiceMatricula {
     public void enviarConfirmacaoTransacao(EmailUsuarioCursoDto dados) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(dados.getLogin());
-        message.setSubject("Matricula Realizada com Sucesso");
+        message.setSubject("Matrícula Realizada com Sucesso");
 
-        String corpo = "A ser feito";
+        String corpo = String.format("""
+        Olá %s,
+
+        Sua matrícula no curso "%s" foi realizada com sucesso!
+
+        Descrição do curso:
+        %s
+
+        Estamos felizes em tê-lo(a) conosco. Prepare-se para uma nova jornada de aprendizado!
+
+        Qualquer dúvida, estamos à disposição.
+
+        Atenciosamente,
+        Equipe de Cursos
+        """, dados.getNome(), dados.getTitulo(), dados.getDescricao());
 
         message.setText(corpo);
         mailSender.send(message);
         System.out.println("E-mail enviado com sucesso para " + dados.getLogin());
     }
+
 }

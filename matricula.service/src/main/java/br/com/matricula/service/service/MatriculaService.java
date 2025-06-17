@@ -101,11 +101,7 @@ public class MatriculaService {
         UsuarioDto usuario = VerificarUsuario(dados.idUsuario());
         CursoDto curso = VerificarCurso(dados.idCurso());
 
-        EmailUsuarioCursoDto emailCorpo = null;
-        emailCorpo.setDescricao(curso.descricao());
-        emailCorpo.setTitulo(curso.titulo());
-        emailCorpo.setNome(usuario.nome());
-        emailCorpo.setLogin(usuario.login());
+        EmailUsuarioCursoDto emailCorpo = new EmailUsuarioCursoDto(usuario.login(), usuario.nome(), curso.titulo(), curso.descricao());
 
         matricula.setStatus(StatusMatricula.MATRICULADO);
         matricula.setData(LocalDate.now());
