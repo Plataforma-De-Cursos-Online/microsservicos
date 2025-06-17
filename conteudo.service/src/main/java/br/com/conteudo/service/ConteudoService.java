@@ -102,11 +102,12 @@ public class ConteudoService {
 
     public List<CadastroConteudoDto> listar(String authorizationHeader){
         var token = extractToken(authorizationHeader);
+        System.out.println(token);
 
         try {
             ListagemUsuarioDTO usuario = webClient.get()
                     .uri("http://localhost:8080/api/usuario/subject")
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                    .header(HttpHeaders.AUTHORIZATION, token)
                     .retrieve()
                     .bodyToMono(ListagemUsuarioDTO.class)
                     .block();
@@ -116,7 +117,9 @@ public class ConteudoService {
         } catch (WebClientResponseException.NotFound e) {
             return null;
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new RuntimeException("Erro ao buscar login do usuário", e);
+
         }
 
         var listaConteudo = conteudoRepository.findAll();
@@ -137,6 +140,7 @@ public class ConteudoService {
     public List<CadastroConteudoDto> listarPorId(String authorizationHeader, UUID idCurso){
         var token = extractToken(authorizationHeader);
 
+        System.out.println(token);
         try {
             boolean id = webClient.get()
                     .uri("http://localhost:8080/api/matricula/verificar-matricula/" +  idCurso)
@@ -161,6 +165,7 @@ public class ConteudoService {
         } catch (WebClientResponseException.NotFound e) {
             return null;
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new RuntimeException("Erro ao buscar login do usuário", e);
         }
 
