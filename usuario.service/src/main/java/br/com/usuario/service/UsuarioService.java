@@ -9,6 +9,7 @@ import br.com.usuario.infra.security.TokenService;
 import br.com.usuario.mapper.UsuarioMapper;
 import br.com.usuario.repository.UsuarioRepository;
 import br.com.usuario.tipo.TipoUsuario;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,6 +26,10 @@ public class UsuarioService {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+
+    @Autowired
     private UsuarioMapper usuarioMapper;
 
     @Autowired
@@ -39,7 +44,11 @@ public class UsuarioService {
         Usuario usuario = usuarioMapper.toEntity(dto);
         usuario.setTipo_usuario(TipoUsuario.fromString(dto.tipoUsuario()));
         usuario.setPassword(new BCryptPasswordEncoder().encode(dto.password()));
-        usuarioRepository.save(usuario);
+        Usuario usuarioSalvo = usuarioRepository.save(usuario);
+
+        EmailCorpoDto emailCorpo = new EmailCorpoDto(usuarioSalvo.getNome(), usuarioSalvo.getLogin(), usuarioSalvo.getTipo_usuario());
+
+        rabbitTemplate.convertAndSend("usuario.criado", emailCorpo);
 
         return usuarioMapper.toListagemUsuarioDTO(usuario);
     }

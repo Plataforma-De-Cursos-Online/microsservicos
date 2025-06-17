@@ -15,7 +15,7 @@ public class MatriculaListen {
     EmailServiceMatricula emailServiceMatricula;
 
     @RabbitListener(queues = "matricula.confirmada")
-    public void ouvirPedido(EmailUsuarioCursoDto emailCorpo) {
+    public void ouvirMatricula(EmailUsuarioCursoDto emailCorpo) {
 
         emailServiceMatricula.enviarConfirmacaoTransacao(emailCorpo);
         System.out.println("Login: " + emailCorpo.getLogin() + " Nome: " + emailCorpo.getNome());
