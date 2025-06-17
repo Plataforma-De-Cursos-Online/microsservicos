@@ -1,5 +1,6 @@
 package br.com.usuario.service;
 
+import br.com.usuario.config.RabbitMQConfig;
 import br.com.usuario.dto.*;
 import br.com.usuario.entity.Usuario;
 import br.com.usuario.exception.EmailExistenteException;
@@ -48,7 +49,11 @@ public class UsuarioService {
 
         EmailCorpoDto emailCorpo = new EmailCorpoDto(usuarioSalvo.getNome(), usuarioSalvo.getLogin(), usuarioSalvo.getTipo_usuario());
 
-        rabbitTemplate.convertAndSend("usuario.criado", emailCorpo);
+        rabbitTemplate.convertAndSend(
+                RabbitMQConfig.EXCHANGE_NAME,
+                RabbitMQConfig.ROUTING_KEY,
+                emailCorpo
+        );
 
         return usuarioMapper.toListagemUsuarioDTO(usuario);
     }
