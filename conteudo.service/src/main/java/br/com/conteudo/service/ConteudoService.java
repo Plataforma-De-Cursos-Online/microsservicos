@@ -25,10 +25,10 @@ import java.util.UUID;
 public class ConteudoService {
 
     @Autowired
-    private ConteudoRepository conteudoRepository;
+    ConteudoRepository conteudoRepository;
 
     @Autowired
-    private ConteudoMapper conteudoMapper;
+    ConteudoMapper conteudoMapper;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -59,7 +59,7 @@ public class ConteudoService {
 
     }
 
-    private boolean VerificarCurso(UUID cursoId) {
+    boolean VerificarCurso(UUID cursoId) {
         try {
             webClient.get()
                     .uri("http://localhost:8082/curso-aluno", cursoId)
