@@ -62,7 +62,7 @@ public class ConteudoService {
     private boolean VerificarCurso(UUID cursoId) {
         try {
             webClient.get()
-                    .uri("http://localhost:8082/curso", cursoId)
+                    .uri("http://localhost:8082/curso-aluno", cursoId)
                     .retrieve()
                     .toBodilessEntity()
                     .block();

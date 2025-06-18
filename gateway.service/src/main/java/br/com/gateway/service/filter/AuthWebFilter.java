@@ -43,19 +43,42 @@ public class AuthWebFilter implements WebFilter {
         }
 
         try {
-            Jwts.parserBuilder()
+            var claimsJws = Jwts.parserBuilder()
                     .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token);
-            logger.debug("Token JWT válido para a requisição: {}", exchange.getRequest().getURI());
 
+            var claims = claimsJws.getBody();
+            //String role = claims.get("", String.class);
+            String role = claims.get("role", String.class);
+            String path = exchange.getRequest().getURI().getPath();
+
+            System.out.println(role + " ###############");
+
+            // Protege endpoints administrativos
+            if (path.startsWith("/api/curso-professor") && !"ROLE_ADMIN".equals(role)) {
+                logger.warn("Acesso negado: usuário sem permissão de admin");
+                exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+                return exchange.getResponse().setComplete();
+            }
+
+            // Protege endpoints administrativos
+            if (path.startsWith("/api/conteudo-professor") && !"ROLE_ADMIN".equals(role)) {
+                logger.warn("Acesso negado: usuário sem permissão de admin");
+                exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+                return exchange.getResponse().setComplete();
+            }
+
+            // Requisição permitida
             return chain.filter(exchange);
+
         } catch (JwtException e) {
             logger.warn("Falha na validação do token JWT", e);
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
     }
+
 
     private String recoverToken(ServerWebExchange exchange) {
         String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);

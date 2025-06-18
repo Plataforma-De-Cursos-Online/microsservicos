@@ -54,7 +54,7 @@ public class MatriculaService {
     private CursoDto VerificarCurso(UUID cursoId) {
         try {
             return webClient.get()
-                    .uri("http://localhost:8082/curso/{id}", cursoId)
+                    .uri("http://localhost:8082/curso-aluno/{id}", cursoId)
                     .retrieve()
                     .bodyToMono(CursoDto.class)
                     .block();

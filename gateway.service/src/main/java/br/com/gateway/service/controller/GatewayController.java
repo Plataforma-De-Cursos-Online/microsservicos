@@ -30,9 +30,11 @@ public class GatewayController {
     ) {
         String url = switch (service) {
             case "usuario" -> "http://localhost:8081";
-            case "curso" -> "http://localhost:8082";
+            case "curso-professor" -> "http://localhost:8082";
+            case "curso-aluno" -> "http://localhost:8082";
             case "matricula" -> "http://localhost:8083";
-            case "conteudo" -> "http://localhost:8084";
+            case "conteudo-professor" -> "http://localhost:8084";
+            case "conteudo-aluno" -> "http://localhost:8084";
             default -> null;
         };
 
