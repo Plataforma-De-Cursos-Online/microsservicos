@@ -196,4 +196,12 @@ public class UsuarioService {
             throw new RuntimeException("Token inválido ou ausente no cabeçalho Authorization");
         }
     }
+
+    public DadosBasicoUsuarioEmailDto getDadosBasicosParaEmail(UUID id) {
+
+        Usuario dados = usuarioRepository.findById(id).orElseThrow(() -> new NaoEncontradoException("Usuário não encontrado"));
+
+        return new DadosBasicoUsuarioEmailDto(dados.getLogin(), dados.getNome());
+
+    }
 }

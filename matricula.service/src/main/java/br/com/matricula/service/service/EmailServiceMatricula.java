@@ -31,7 +31,7 @@ public class EmailServiceMatricula {
         Qualquer dúvida, estamos à disposição.
 
         Atenciosamente,
-        Equipe de Cursos
+        Mony courses
         """, dados.getNome(), dados.getTitulo(), dados.getDescricao());
 
         message.setText(corpo);

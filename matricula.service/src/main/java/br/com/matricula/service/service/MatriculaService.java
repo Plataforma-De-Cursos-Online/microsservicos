@@ -40,7 +40,7 @@ public class MatriculaService {
     private UsuarioDto VerificarUsuario(UUID usuarioId) {
         try {
             return webClient.get()
-                    .uri("http://localhost:8081/usuario/{id}", usuarioId)
+                    .uri("http://localhost:8081/usuario/usuario-email-corpo/{id}", usuarioId)
                     .retrieve()
                     .bodyToMono(UsuarioDto.class)
                     .block();
@@ -103,6 +103,9 @@ public class MatriculaService {
         CursoDto curso = VerificarCurso(dados.idCurso());
 
         EmailUsuarioCursoDto emailCorpo = new EmailUsuarioCursoDto(usuario.login(), usuario.nome(), curso.titulo(), curso.descricao());
+
+        System.out.println("###########  " + usuario.nome());
+        System.out.println("###########  " + emailCorpo.getNome());
 
         matricula.setStatus(StatusMatricula.MATRICULADO);
         matricula.setData(LocalDate.now());

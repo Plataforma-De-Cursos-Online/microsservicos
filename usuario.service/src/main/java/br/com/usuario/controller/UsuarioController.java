@@ -37,6 +37,11 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.getUserById(id));
     }
 
+    @GetMapping("/usuario-email-corpo/{id}")
+    public ResponseEntity<DadosBasicoUsuarioEmailDto> getDadosBasicosParaEmail(@PathVariable UUID id) {
+        return ResponseEntity.ok(usuarioService.getDadosBasicosParaEmail(id));
+    }
+
     @PostMapping("/loginByEmail")
     public ResponseEntity<Object> getUserByLogin(@RequestBody ListagemUsuarioDTO dto) {
         return ResponseEntity.ok(usuarioService.getUserByLogin(dto));
